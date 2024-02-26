@@ -53,7 +53,10 @@ var queryOverrides = map[string][]OverrideQuery{
 			SELECT *,
 				(case pg_is_in_recovery() when 't' then null else pg_current_wal_lsn() end) AS pg_current_wal_lsn,
 				(case pg_is_in_recovery() when 't' then null else pg_wal_lsn_diff(pg_current_wal_lsn(), pg_lsn('0/0'))::float end) AS pg_current_wal_lsn_bytes,
-				(case pg_is_in_recovery() when 't' then null else pg_wal_lsn_diff(pg_current_wal_lsn(), replay_lsn)::float end) AS pg_wal_lsn_diff
+				(case pg_is_in_recovery() when 't' then null else pg_wal_lsn_diff(pg_current_wal_lsn(), replay_lsn)::float end) AS pg_wal_lsn_diff,
+				(case pg_is_in_recovery() when 't' then null else  extract(seconds from write_lag) end) as write_lag_seconds,
+				(case pg_is_in_recovery() when 't' then null else  extract(seconds from flush_lag) end) as flush_lag_seconds,
+				(case pg_is_in_recovery() when 't' then null else  extract(seconds from replay_lag) end) as replay_lag_seconds
 			FROM pg_stat_replication
 			`,
 		},
